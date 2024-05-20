@@ -1,0 +1,26 @@
+spring:
+  application:
+    name: skyuser
+  datasource:
+    url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://localhost:5432/sky_db}
+    username: ${SPRING_DATASOURCE_USERNAME:sky_user}
+    password: ${SPRING_DATASOURCE_PASSWORD:sky_pass}
+    driver-class-name: org.postgresql.Driver
+  jpa:
+    hibernate:
+      ddl-auto: ${SPRING_JPA_HIBERNATE_DDL_AUTO:validate}
+    open-in-view: false
+  liquibase:
+    change-log: classpath:db/changelog/db.changelog-master.xml
+
+initial-user-password: test
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+  prometheus:
+    metrics:
+      export:
+        enabled: true

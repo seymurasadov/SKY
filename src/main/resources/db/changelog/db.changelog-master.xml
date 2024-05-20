@@ -1,0 +1,146 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.8.xsd">
+
+    <changeSet id="Create User table" author="seymur.asadov">
+        <createTable tableName="users">
+            <column name="id" type="BIGINT">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="email" type="VARCHAR(200)">
+                <constraints nullable="false" unique="true"/>
+            </column>
+            <column name="password" type="VARCHAR(129)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="name" type="VARCHAR(120)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+
+    <changeSet id="Insert admin user" author="seymur.asadov">
+        <insert tableName="users">
+            <column name="id" value="1"/>
+            <column name="email" value="admin@example.com"/>
+            <column name="password"
+                    value="$2a$10$qrLnze5bgcGj53fZ8gGOIuURER5xP.SJkKb30xT7WWHJhUvYGkujO"/> <!-- admin -->
+            <column name="name" value="Admin"/>
+        </insert>
+    </changeSet>
+
+    <changeSet id="Create Role table" author="seymur.asadov">
+        <createTable tableName="roles">
+            <column name="id" type="BIGINT">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="name" type="VARCHAR(100)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+
+    <changeSet id="Insert admin role" author="seymur.asadov">
+        <insert tableName="roles">
+            <column name="id" value="1"/>
+            <column name="name" value="ROLE_ADMIN"/>
+        </insert>
+    </changeSet>
+
+    <changeSet id="Insert User role" author="seymur.asadov">
+        <insert tableName="roles">
+            <column name="id" value="2"/>
+            <column name="name" value="ROLE_USER"/>
+        </insert>
+    </changeSet>
+
+    <changeSet id="Create User Role relation table" author="seymur.asadov">
+        <createTable tableName="user_roles">
+            <column name="user_id" type="BIGINT">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="role_id" type="BIGINT">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+        </createTable>
+
+        <addForeignKeyConstraint
+                baseTableName="user_roles"
+                baseColumnNames="user_id"
+                constraintName="fk_user_roles_user_id"
+                referencedTableName="users"
+                referencedColumnNames="id"/>
+
+        <addForeignKeyConstraint
+                baseTableName="user_roles"
+                baseColumnNames="role_id"
+                constraintName="fk_user_roles_role_id"
+                referencedTableName="roles"
+                referencedColumnNames="id"/>
+    </changeSet>
+
+    <changeSet id="Assign admin role to admin user" author="seymur.asadov">
+        <insert tableName="user_roles">
+            <column name="user_id" value="1"/>
+            <column name="role_id" value="1"/>
+        </insert>
+    </changeSet>
+
+    <changeSet id="Create User id Sequence" author="seymur.asadov">
+        <createSequence sequenceName="user_id_seq"
+                        incrementBy="1"
+                        minValue="2"
+                        maxValue="9223372036854775807"
+                        startValue="2"
+                        cacheSize="1"
+                        cycle="false"/>
+    </changeSet>
+
+    <changeSet id="Create Role id Sequence" author="seymur.asadov">
+        <createSequence sequenceName="role_id_seq"
+                        incrementBy="1"
+                        minValue="3"
+                        maxValue="9223372036854775807"
+                        startValue="3"
+                        cacheSize="1"
+                        cycle="false"/>
+    </changeSet>
+
+    <changeSet id="Create External Project table" author="seymur.asadov">
+        <createTable tableName="external_projects">
+            <column name="id" type="BIGINT">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="user_id" type="BIGINT">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="name" type="VARCHAR(120)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+        <addForeignKeyConstraint
+                baseTableName="external_projects"
+                baseColumnNames="user_id"
+                constraintName="fk_user_id"
+                referencedTableName="users"
+                referencedColumnNames="id"/>
+        <addUniqueConstraint
+                columnNames="user_id, name"
+                constraintName="uc_user_id_name"
+                tableName="external_projects"/>
+    </changeSet>
+
+    <changeSet id="Create External Project id Sequence" author="seymur.asadov">
+        <createSequence sequenceName="external_project_id_seq"
+                        incrementBy="1"
+                        minValue="1"
+                        maxValue="9223372036854775807"
+                        startValue="1"
+                        cacheSize="1"
+                        cycle="false"/>
+    </changeSet>
+
+</databaseChangeLog>
